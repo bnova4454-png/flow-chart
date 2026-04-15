@@ -1,0 +1,100 @@
+<%@ Page Language="C#" AutoEventWireup="true" CodeFile="new-demo1.aspx.cs" Inherits="new_demo1" %>
+
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head id="Head1" runat="server">
+    <title>Label Diagram with Arrow</title>
+
+    <style>
+        #area {
+            position: relative;
+            width: 400px;
+            height: 300px;
+            border: 1px solid #ccc;
+        }
+
+        .box {
+            position: absolute;
+            width: 120px;
+            height: 50px;
+            border: 2px solid black;
+            text-align: center;
+            line-height: 50px;
+            background: #eee;
+            font-family: Arial;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+
+<body>
+<form id="Form1" runat="server">
+
+<div id="area">
+
+    <!-- Canvas -->
+    <canvas id="canvas" width="400" height="300"></canvas>
+
+    <!-- MAIN LABEL -->
+    <asp:Label ID="lblMain" runat="server" Text="Main"
+        CssClass="box"
+        Style="left:140px; top:40px;" />
+
+    <!-- SUB LABEL -->
+    <asp:Label ID="lblSub" runat="server" Text="Sub"
+        CssClass="box"
+        Style="left:140px; top:150px;" />
+
+</div>
+
+<script>
+window.onload = function () {
+
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    const main = document.getElementById("<%= lblMain.ClientID %>").getBoundingClientRect();
+    const sub  = document.getElementById("<%= lblSub.ClientID %>").getBoundingClientRect();
+    const area = document.getElementById("area").getBoundingClientRect();
+
+    // Start (bottom center of main)
+    const startX = main.left - area.left + main.width / 2;
+    const startY = main.bottom - area.top;
+
+    // End (top center of sub)
+    const endX = sub.left - area.left + sub.width / 2;
+    const endY = sub.top - area.top;
+
+    // Draw line
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(endX, endY);
+    ctx.stroke();
+
+    // Arrow head
+    const angle = Math.atan2(endY - startY, endX - startX);
+
+    ctx.beginPath();
+    ctx.moveTo(endX, endY);
+    ctx.lineTo(endX - 8 * Math.cos(angle - Math.PI / 6),
+               endY - 8 * Math.sin(angle - Math.PI / 6));
+    ctx.lineTo(endX - 8 * Math.cos(angle + Math.PI / 6),
+               endY - 8 * Math.sin(angle + Math.PI / 6));
+    ctx.closePath();
+    ctx.fill();
+
+};
+</script>
+
+</form>
+</body>
+</html>
